@@ -21,9 +21,8 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
     Route::resource('users', \App\Http\Controllers\UserController::class);
 
     // Reportes
-    Route::get('/reports', function() {
-        return view('reports.index');
-    })->name('reports.index');
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])
+        ->name('reports.index');
 });
 
 // Rutas para admin y cajero
