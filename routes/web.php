@@ -9,10 +9,8 @@ Route::get('/', function(){
 
 // Rutas solo para admin
 Route::middleware(['auth', 'role:admin'])->group(function() {
-    Route::get('/dashboard', function() {
-        return view('dashboard');
-    })->name('dashboard');
-
+    Route::get('/dashboard', \App\Http\Controllers\DashboardController::class)
+    ->name('dashboard');
     // Categorias
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
     
