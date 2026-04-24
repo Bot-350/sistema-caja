@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('number')->unique();
             $table->foreignId('customer_id')->nullable()->constrained()->onDelete('restrict');
             $table->foreignId('user_id')->constrained()->onDelete('restrict');
-            $table->string('user_name')->unique();
+            $table->string('user_name');
             $table->enum('payment_method', ['efectivo', 'qr']);
-            $table->enum('status', ['activa', 'anulada'])->default('activada');
+            $table->enum('status', ['activa', 'anulada'])->default('activa');
             $table->decimal('total', 8, 2);
             $table->timestamps();
         });
