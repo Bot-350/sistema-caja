@@ -37,15 +37,18 @@ COPY . .
 # Instalar dependencias PHP
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Instalar dependencias Node y compilar assets
-RUN npm install && npm run build
-
-# Generar clave de aplicación
-RUN php artisan key:generate
-
 # Crear directorio storage con permisos
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache && \
     chmod -R 775 storage bootstrap/cache
+
+# Instalar dependencias Node y compilar assets
+RUN npm install && npm run build
+
+# Crear archivo .env si no existe
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
+# Generar clave de aplicación
+RUN php artisan key:generate --force
 
 # Exponer puerto
 EXPOSE 8000
