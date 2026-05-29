@@ -1,115 +1,160 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Nueva Venta
-        </h2>
-    </x-slot>
 
-    <div class="py-6 max-w-4xl mx-auto px-4">
+    <div class="flex h-screen overflow-hidden" style="height: calc(100vh - 64px)">
 
-        <form action="{{ route('sales.store') }}" method="POST" id="saleForm">
-            @csrf
+        {{-- Columna izquierda --}}
+        <div class="flex-1 flex flex-col overflow-hidden bg-gray-50 p-4">
 
-            <div class="grid grid-cols-2 gap-6">
+            {{-- Buscador y cliente --}}
+            <div class="flex gap-3 mb-4">
+                <div class="flex-1 relative">
+                    <input type="text" id="searchProduct"
+                        placeholder="Buscar producto..."
+                        class="border rounded-lg px-4 py-2 w-full pl-10 bg-white" />
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+                    </svg>
+                </div>
+                <select name="customer_id" id="customer_id" class="border rounded-lg px-3 py-2 bg-white w-48">
+                    <option value="">Sin cliente</option>
+                    @foreach($customers as $customer)
+                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-                {{-- Columna izquierda --}}
-                <div>
+            {{-- Categorías --}}
+            <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+                <button type="button" onclick="filterCategory('all')"
+                    class="category-btn active-cat px-4 py-2 rounded-lg border bg-white text-sm whitespace-nowrap font-medium">
+                    Todos
+                </button>
+                @foreach($products->groupBy('category.name') as $catName => $catProducts)
+                <button type="button" onclick="filterCategory('{{ strtolower($catName) }}')"
+                    class="category-btn px-4 py-2 rounded-lg border bg-white text-sm whitespace-nowrap text-gray-600">
+                    {{ $catName }}
+                    <span class="text-gray-400 text-xs ml-1">{{ $catProducts->count() }}</span>
+                </button>
+                @endforeach
+            </div>
 
-                    {{-- Cliente --}}
-                    <div class="bg-white rounded-lg shadow p-6 mb-6">
-                        <h3 class="text-lg font-semibold mb-4">Cliente</h3>
-                        <select name="customer_id" class="border rounded px-3 py-2 w-full">
-                            <option value="">Sin cliente</option>
-                            @foreach($customers as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                            @endforeach
-                        </select>
+            {{-- Grid de productos --}}
+            <div id="productGrid" class="grid grid-cols-3 gap-3 overflow-y-auto flex-1">
+                @foreach($products as $product)
+                <div class="product-card bg-white border rounded-xl p-4 cursor-pointer hover:border-blue-400 hover:shadow-sm transition"
+                    data-name="{{ strtolower($product->name) }}"
+                    data-category="{{ strtolower($product->category->name) }}"
+                    onclick="addProduct({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})">
+                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                        </svg>
+                    </div>
+                    <p class="font-medium text-sm text-gray-800">{{ $product->name }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ $product->category->name }}</p>
+                    <p class="text-blue-600 font-semibold text-sm mt-2">{{ number_format($product->price, 2) }} Bs</p>
+                </div>
+                @endforeach
+            </div>
+
+        </div>
+
+        {{-- Columna derecha - Ticket --}}
+        <div class="w-80 bg-white border-l flex flex-col">
+
+            <form action="{{ route('sales.store') }}" method="POST" id="saleForm" class="flex flex-col h-full">
+                @csrf
+                <input type="hidden" name="customer_id" id="customer_id_input">
+
+                {{-- Header ticket --}}
+                <div class="p-4 border-b">
+                    <h3 class="font-semibold text-gray-800">Ticket</h3>
+                    <p id="customerName" class="text-xs text-gray-400 mt-1">Sin cliente</p>
+                </div>
+
+                {{-- Items del ticket --}}
+                <div id="ticketItems" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <p id="emptyTicket" class="text-gray-400 text-center text-sm py-8">
+                        Agrega productos al ticket
+                    </p>
+                </div>
+
+                {{-- Totales --}}
+                <div class="border-t p-4">
+                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                        <span>Subtotal</span>
+                        <span id="subtotalAmount">0.00 Bs</span>
+                    </div>
+                    <div class="flex justify-between font-semibold text-lg text-gray-800 mb-4">
+                        <span>Total</span>
+                        <span id="totalAmount">0.00 Bs</span>
                     </div>
 
                     {{-- Método de pago --}}
-                    <div class="bg-white rounded-lg shadow p-6 mb-6">
-                        <h3 class="text-lg font-semibold mb-4">Método de pago</h3>
-                        <div class="flex gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="payment_method" value="efectivo" checked />
-                                Efectivo
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="payment_method" value="qr" />
-                                QR
-                            </label>
-                        </div>
-                    </div>
-
-                    {{-- Búsqueda de productos --}}
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Buscar Producto</h3>
-                        <input type="text" id="searchProduct" placeholder="Escribir nombre del producto..."
-                            class="border rounded px-3 py-2 w-full mb-4" />
-                        <div id="productList" class="space-y-2 max-h-64 overflow-y-auto">
-                            @foreach($products as $product)
-                            <div class="product-item border rounded px-3 py-2 flex justify-between items-center hover:bg-gray-50 cursor-pointer"
-                                data-name="{{ strtolower($product->name) }}"
-                                onclick="addProduct({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
-                                <div>
-                                    <span class="font-medium">{{ $product->name }}</span>
-                                    <span class="text-gray-400 text-sm ml-2">{{ $product->category->name }}</span>
-                                </div>
-                                <span class="text-blue-600 font-medium">{{ number_format($product->price, 2) }} Bs</span>
+                    <p class="text-xs text-gray-500 mb-2 font-medium">Método de pago</p>
+                    <div class="flex gap-2 mb-4">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="payment_method" value="efectivo" class="sr-only peer" checked>
+                            <div class="border-2 rounded-lg p-2 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-600 text-gray-500 transition">
+                                💵 Efectivo
                             </div>
-                            @endforeach
-                        </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="payment_method" value="qr" class="sr-only peer">
+                            <div class="border-2 rounded-lg p-2 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-600 text-gray-500 transition">
+                                📱 QR
+                            </div>
+                        </label>
                     </div>
 
+                    {{-- Botones --}}
+                    <button type="submit"
+                        class="bg-blue-600 text-white py-3 rounded-xl w-full font-semibold hover:bg-blue-700 transition mb-2">
+                        Registrar Venta
+                    </button>
+                    <a href="{{ route('sales.index') }}"
+                        class="block text-center text-gray-500 text-sm py-2 hover:text-gray-700">
+                        Cancelar
+                    </a>
                 </div>
 
-                {{-- Columna derecha - Ticket --}}
-                <div>
-                    <div class="bg-white rounded-lg shadow p-6 sticky top-4">
-                        <h3 class="text-lg font-semibold mb-4">Ticket</h3>
+            </form>
+        </div>
 
-                        <div id="ticketItems" class="space-y-2 mb-4 min-h-32">
-                            <p id="emptyTicket" class="text-gray-400 text-center py-8">
-                                Agrega productos al ticket
-                            </p>
-                        </div>
-
-                        <div class="border-t pt-4">
-                            <div class="flex justify-between text-xl font-bold">
-                                <span>Total:</span>
-                                <span id="totalAmount">0.00 Bs</span>
-                            </div>
-                        </div>
-
-                        <button type="submit"
-                            class="bg-blue-600 text-white px-4 py-3 rounded w-full mt-4 hover:bg-blue-700 text-lg font-semibold">
-                            Registrar Venta
-                        </button>
-
-                        <a href="{{ route('sales.index') }}"
-                            class="block text-center bg-gray-200 px-4 py-3 rounded w-full mt-2 hover:bg-gray-300">
-                            Cancelar
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-
-        </form>
     </div>
+
+    <style>
+        .active-cat { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+    </style>
 
     <script>
         let items = {};
 
+        // Sincronizar cliente
+        document.getElementById('customer_id').addEventListener('change', function() {
+            document.getElementById('customer_id_input').value = this.value;
+            const text = this.options[this.selectedIndex].text;
+            document.getElementById('customerName').textContent = this.value ? text : 'Sin cliente';
+        });
+
         // Buscar productos
         document.getElementById('searchProduct').addEventListener('input', function() {
             const search = this.value.toLowerCase();
-            document.querySelectorAll('.product-item').forEach(item => {
-                item.style.display = item.dataset.name.includes(search) ? 'flex' : 'none';
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.display = card.dataset.name.includes(search) ? 'block' : 'none';
             });
         });
 
-        // Agregar producto al ticket
+        // Filtrar por categoría
+        function filterCategory(cat) {
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active-cat'));
+            event.target.classList.add('active-cat');
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'block' : 'none';
+            });
+        }
+
+        // Agregar producto
         function addProduct(id, name, price) {
             if (items[id]) {
                 items[id].quantity++;
@@ -122,40 +167,38 @@
         // Renderizar ticket
         function renderTicket() {
             const container = document.getElementById('ticketItems');
-            const empty = document.getElementById('emptyTicket');
             container.innerHTML = '';
 
             if (Object.keys(items).length === 0) {
-                container.innerHTML = '';
-                const emptyMsg = document.createElement('p');
-                emptyMsg.className = 'text-gray-400 text-center py-8';
-                emptyMsg.textContent = 'Agrega productos al ticket';
-                container.appendChild(emptyMsg);
+                const msg = document.createElement('p');
+                msg.className = 'text-gray-400 text-center text-sm py-8';
+                msg.textContent = 'Agrega productos al ticket';
+                container.appendChild(msg);
                 document.getElementById('totalAmount').textContent = '0.00 Bs';
+                document.getElementById('subtotalAmount').textContent = '0.00 Bs';
                 return;
             }
 
             Object.entries(items).forEach(([id, item], index) => {
                 const div = document.createElement('div');
-                div.className = 'flex justify-between items-center border-b pb-2';
+                div.className = 'flex items-center gap-2 py-2 border-b';
                 div.innerHTML = `
-                    <div class="flex-1">
-                        <p class="font-medium text-sm">${item.name}</p>
-                        <p class="text-gray-400 text-xs">${item.price.toFixed(2)} Bs c/u</p>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-800 truncate">${item.name}</p>
+                        <p class="text-xs text-gray-400">${item.price.toFixed(2)} Bs c/u</p>
                         <input type="hidden" name="items[${index}][product_id]" value="${id}">
                         <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1">
                         <button type="button" onclick="changeQty(${id}, -1)"
-                            class="bg-gray-200 px-2 rounded hover:bg-gray-300">-</button>
-                        <span class="w-6 text-center">${item.quantity}</span>
+                            class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">−</button>
+                        <span class="w-6 text-center text-sm font-medium">${item.quantity}</span>
                         <button type="button" onclick="changeQty(${id}, 1)"
-                            class="bg-gray-200 px-2 rounded hover:bg-gray-300">+</button>
-                        <button type="button" onclick="removeItem(${id})"
-                            class="text-red-500 hover:text-red-700 ml-2">✕</button>
+                            class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">+</button>
                     </div>
-                    <div class="ml-4 text-right">
-                        <span class="font-medium">${(item.price * item.quantity).toFixed(2)} Bs</span>
+                    <div class="text-right min-w-14">
+                        <p class="text-sm font-semibold text-gray-800">${(item.price * item.quantity).toFixed(2)} Bs</p>
+                        <button type="button" onclick="removeItem(${id})" class="text-red-400 hover:text-red-600 text-xs">eliminar</button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -164,23 +207,21 @@
             updateTotal();
         }
 
-        // Cambiar cantidad
         function changeQty(id, delta) {
             items[id].quantity += delta;
             if (items[id].quantity <= 0) delete items[id];
             renderTicket();
         }
 
-        // Eliminar item
         function removeItem(id) {
             delete items[id];
             renderTicket();
         }
 
-        // Actualizar total
         function updateTotal() {
             const total = Object.values(items).reduce((sum, item) => sum + (item.price * item.quantity), 0);
             document.getElementById('totalAmount').textContent = total.toFixed(2) + ' Bs';
+            document.getElementById('subtotalAmount').textContent = total.toFixed(2) + ' Bs';
         }
     </script>
 

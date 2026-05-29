@@ -30,6 +30,10 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/profile', function() {
         return view('profile');
     })->name('profile');
+
+    // Dashboard cajero
+    Route::get('/cajero', \App\Http\Controllers\CajeroDashboardController::class)
+        ->name('cajero.dashboard');
     
     // Clientes
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
@@ -38,9 +42,9 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('sales', \App\Http\Controllers\SaleController::class);
 
     // Caja
-    Route::get('/cash', function() {
-        return view('cash.index');
-    })->name('cash.index');
-});
+    Route::get('/cash', [\App\Http\Controllers\CashRegisterController::class, 'index'])->name('cash.index');
+    Route::post('/cash/open', [\App\Http\Controllers\CashRegisterController::class, 'open'])->name('cash.open');
+    Route::post('/cash/close', [\App\Http\Controllers\CashRegisterController::class, 'close'])->name('cash.close');
+    });
 
 require __DIR__.'/auth.php';

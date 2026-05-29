@@ -10,10 +10,21 @@ use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
-    // Muestra la lista de las ventas
+
+    // Muestra la lista de ventas según el rol
     public function index()
     {
-        $sales = Sale::with('customer')->latest()->get();
+        if (auth()->user()->isAdmin()) {
+            // Admin ve todas las ventas
+            $sales = Sale::with('customer')->latest()->get();
+        } else {
+            // Cajero solo ve sus propias ventas
+            $sales = Sale::with('customer')
+                ->where('user_id', auth()->id())
+                ->latest()
+                ->get();
+        }
+
         return view('sales.index', compact('sales'));
     }
 
