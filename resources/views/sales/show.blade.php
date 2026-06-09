@@ -48,6 +48,28 @@
             </div>
         </div>
 
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">Resumen del Descuento</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <p class="text-gray-500">Subtotal</p>
+                    <p class="font-semibold text-gray-900">{{ number_format($sale->subtotal ?? $sale->total, 2) }} Bs</p>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <p class="text-gray-500">Descuento aplicado</p>
+                    <p class="font-semibold text-gray-900">{{ number_format($sale->discount_percentage ?? 0, 2) }}%</p>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <p class="text-gray-500">Monto descontado</p>
+                    <p class="font-semibold text-gray-900">{{ number_format($sale->discount_amount ?? 0, 2) }} Bs</p>
+                </div>
+                <div class="p-4 rounded-lg bg-blue-50">
+                    <p class="text-blue-700">Total final</p>
+                    <p class="text-xl font-bold text-blue-800">{{ number_format($sale->total, 2) }} Bs</p>
+                </div>
+            </div>
+        </div>
+
         {{-- Items de la venta --}}
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h3 class="text-lg font-semibold mb-4">Productos</h3>
@@ -80,7 +102,7 @@
         </div>
 
         {{-- Botón anular --}}
-        @if($sale->status === 'activa')
+        @if(auth()->user()->isAdmin() && $sale->status === 'activa')
         <div class="flex justify-end">
             <form action="{{ route('sales.destroy', $sale) }}" method="POST"
                 onsubmit="return confirm('¿Anular esta venta?')">

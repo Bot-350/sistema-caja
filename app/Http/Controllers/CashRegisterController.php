@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CashMovement;
 use App\Models\CashRegister;
 use App\Models\Sale;
 use Illuminate\Http\Request;
@@ -12,34 +13,69 @@ class CashRegisterController extends Controller
     public function index()
     {
         // Buscar si hay una caja abierta
-        $cashRegister = CashRegister::where('status', 'abierta')->latest()->first();
+        $cashRegister = CashRegister::with(['user', 'movements.user'])
+            ->where('status', 'abierta')
+            ->latest()
+            ->first();
 
+        $summaryCashRegister = $cashRegister ?? CashRegister::with(['user', 'movements.user'])
+            ->latest()
+            ->first();
+
+        $saldoInicial = 0;
         $ventasEfectivo = 0;
         $ventasQr = 0;
+        $ingresosManuales = 0;
+        $egresosManuales = 0;
+        $totalIngresos = 0;
+        $totalEgresos = 0;
         $saldoActual = 0;
+        $movements = collect();
 
-        if ($cashRegister) {
-            // Ventas en efectivo desde que se abrió la caja
-            $ventasEfectivo = Sale::where('status', 'activa')
+        if ($summaryCashRegister) {
+            $saldoInicial = $summaryCashRegister->opening_amount;
+
+            $salesQuery = $summaryCashRegister->sales();
+
+            // Ventas en efectivo del resumen diario
+            $ventasEfectivo = (clone $salesQuery)
                 ->where('payment_method', 'efectivo')
-                ->where('created_at', '>=', $cashRegister->opened_at)
                 ->sum('total');
 
-            // Ventas en QR desde que se abrió la caja
-            $ventasQr = Sale::where('status', 'activa')
+            // Ventas en QR del resumen diario
+            $ventasQr = (clone $salesQuery)
                 ->where('payment_method', 'qr')
-                ->where('created_at', '>=', $cashRegister->opened_at)
                 ->sum('total');
 
-            // Saldo actual = monto inicial + ventas efectivo
-            $saldoActual = $cashRegister->opening_amount + $ventasEfectivo;
+            $ingresosManuales = $summaryCashRegister->movements()
+                ->where('type', 'income')
+                ->sum('amount');
+
+            $egresosManuales = $summaryCashRegister->movements()
+                ->where('type', 'expense')
+                ->sum('amount');
+
+            $movements = $summaryCashRegister->movements()->with('user')->latest()->get();
+
+            $totalIngresos = $saldoInicial + $ventasEfectivo + $ventasQr + $ingresosManuales;
+            $totalEgresos = $egresosManuales;
+
+            // Saldo actual = monto inicial + ventas efectivo + ventas QR + ingresos manuales - egresos manuales
+            $saldoActual = $totalIngresos - $totalEgresos;
         }
 
         return view('cash.index', compact(
             'cashRegister',
+            'summaryCashRegister',
+            'saldoInicial',
             'ventasEfectivo',
             'ventasQr',
-            'saldoActual'
+            'ingresosManuales',
+            'egresosManuales',
+            'totalIngresos',
+            'totalEgresos',
+            'saldoActual',
+            'movements'
         ));
     }
 
@@ -59,6 +95,34 @@ class CashRegisterController extends Controller
 
         return redirect()->route('cash.index')
             ->with('success', 'Caja abierta correctamente.');
+    }
+
+    // Registra un ingreso o egreso manual
+    public function storeMovement(Request $request)
+    {
+        $request->validate([
+            'type'   => 'required|in:ingreso,egreso',
+            'amount' => 'required|numeric|min:0.01',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $cashRegister = CashRegister::where('status', 'abierta')->latest()->first();
+
+        if (!$cashRegister) {
+            return redirect()->route('cash.index')
+                ->with('error', 'Debes abrir la caja antes de registrar movimientos.');
+        }
+
+        CashMovement::create([
+            'cash_register_id' => $cashRegister->id,
+            'user_id'          => auth()->id(),
+            'type'             => $request->type,
+            'amount'           => $request->amount,
+            'reason'           => $request->reason,
+        ]);
+
+        return redirect()->route('cash.index')
+            ->with('success', 'Movimiento registrado correctamente.');
     }
 
     // Cierra la caja

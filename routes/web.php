@@ -39,11 +39,18 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 
     // Ventas
-    Route::resource('sales', \App\Http\Controllers\SaleController::class);
+    Route::resource('sales', \App\Http\Controllers\SaleController::class)->except(['destroy']);
+    Route::get('/sales/{sale}/ticket', [\App\Http\Controllers\SaleController::class, 'ticket'])
+        ->name('sales.ticket');
+    Route::delete('/sales/{sale}', [\App\Http\Controllers\SaleController::class, 'destroy'])
+        ->name('sales.destroy')
+        ->middleware('role:admin');
 
     // Caja
     Route::get('/cash', [\App\Http\Controllers\CashRegisterController::class, 'index'])->name('cash.index');
     Route::post('/cash/open', [\App\Http\Controllers\CashRegisterController::class, 'open'])->name('cash.open');
+    Route::post('/cash/movements', [\App\Http\Controllers\CashRegisterController::class, 'storeMovement'])
+        ->name('cash.movements.store');
     Route::post('/cash/close', [\App\Http\Controllers\CashRegisterController::class, 'close'])->name('cash.close');
     });
 

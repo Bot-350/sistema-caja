@@ -32,4 +32,10 @@ class CashRegister extends Model
             ->where('created_at', '>=', $this->opened_at)
             ->when($this->closed_at, fn($q) => $q->where('created_at', '<=', $this->closed_at));
     }
+
+    // Movimientos manuales de caja
+    public function movements()
+    {
+        return $this->hasMany(CashMovement::class);
+    }
 }

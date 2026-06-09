@@ -42,20 +42,24 @@ class SaleController extends Controller
         $request->validate([
             'customer_id'    => 'nullable|exists:customers,id',
             'payment_method' => 'required|in:efectivo,qr',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
             'items'          => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
         ]);
 
-        DB::transaction(function () use ($request) {
-            // Calcular el total
-            $total = 0;
+        $createdSale = null;
+
+        DB::transaction(function () use ($request, &$createdSale) {
+            // Calcular subtotal y descuento
+            $subtotal = 0;
             $items = [];
+            $discountPercentage = (float) ($request->discount_percentage ?? 0);
 
             foreach ($request->items as $item) {
                 $product = Product::find($item['product_id']);
-                $subtotal = $product->price * $item['quantity'];
-                $total += $subtotal;
+                $itemSubtotal = $product->price * $item['quantity'];
+                $subtotal += $itemSubtotal;
 
                 $items[] = [
                     'product_id'   => $product->id,
@@ -65,23 +69,29 @@ class SaleController extends Controller
                 ];
             }
 
+            $discountAmount = round($subtotal * $discountPercentage / 100, 2);
+            $total = round(max($subtotal - $discountAmount, 0), 2);
+
             // Generar nmero de venta automático
             $lastSale = Sale::latest()->first();
             $number = $lastSale ? str_pad($lastSale->id + 1, 6, '0', STR_PAD_LEFT) : '000001';
 
             // Crear la venta
-            $sale = Sale::create([
+            $createdSale = Sale::create([
                 'number'         => $number,
                 'customer_id'    => $request->customer_id,
                 'user_id'        => auth()->id(),
                 'user_name'      => auth()->user()->name,
                 'payment_method' => $request->payment_method,
                 'status'         => 'activa',
+                'subtotal'       => $subtotal,
+                'discount_percentage' => $discountPercentage,
+                'discount_amount' => $discountAmount,
                 'total'          => $total,
             ]);
 
             // Guardar los items
-            $sale->items()->createMany($items);
+            $createdSale->items()->createMany($items);
 
             // Incrementar visitas del cliente si hay uno
             if ($request->customer_id) {
@@ -89,8 +99,16 @@ class SaleController extends Controller
             }
         });
 
-        return redirect()->route('sales.index')
+        return redirect()->route('sales.ticket', $createdSale)
             ->with('success', 'Venta registrada correctamente.');
+    }
+
+    // Muestra el ticket de la venta
+    public function ticket(Sale $sale)
+    {
+        $sale->load('items', 'customer');
+
+        return view('sales.ticket', compact('sale'));
     }
 
     // Muestra el detalle de una venta
@@ -103,6 +121,8 @@ class SaleController extends Controller
     // Anula una venta
     public function destroy(Sale $sale)
     {
+        abort_unless(auth()->user()->isAdmin(), 403, 'No tienes permiso para anular ventas.');
+
         if ($sale->status === 'anulada') {
             return redirect()->route('sales.index')
                 ->with('error', 'Esta venta ya está anulada.');

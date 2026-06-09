@@ -68,7 +68,11 @@
                                 class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
                                 Ver
                             </a>
-                            @if($sale->status === 'activa')
+                            <a href="{{ route('sales.ticket', $sale) }}"
+                                class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-800 text-sm">
+                                Imprimir
+                            </a>
+                            @if(auth()->user()->isAdmin() && $sale->status === 'activa')
                             <form action="{{ route('sales.destroy', $sale) }}" method="POST"
                                 onsubmit="return confirm('¿Anular esta venta?')">
                                 @csrf

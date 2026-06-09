@@ -18,9 +18,13 @@
                 <select name="customer_id" id="customer_id" class="border rounded-lg px-3 py-2 bg-white w-48">
                     <option value="">Sin cliente</option>
                     @foreach($customers as $customer)
-                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                        <option value="{{ $customer->id }}" data-birthday="{{ $customer->birthday ? $customer->birthday->format('Y-m-d') : '' }}">{{ $customer->name }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <div id="birthdayAlert" class="hidden mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                🎂 Cliente con cumpleaños próximo. Considere aplicar una promoción.
             </div>
 
             {{-- Categorías --}}
@@ -85,8 +89,24 @@
                         <span>Subtotal</span>
                         <span id="subtotalAmount">0.00 Bs</span>
                     </div>
+                    <div class="mb-3">
+                        <label for="discount_percentage" class="block text-xs text-gray-500 mb-1 font-medium">Descuento (%)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" name="discount_percentage" id="discount_percentage"
+                                value="0" min="0" max="100" step="1"
+                                class="border rounded-lg px-3 py-2 w-full bg-white" />
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                        <span>Descuento aplicado</span>
+                        <span id="discountPercentageView">0%</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                        <span>Monto descontado</span>
+                        <span id="discountAmountView">0.00 Bs</span>
+                    </div>
                     <div class="flex justify-between font-semibold text-lg text-gray-800 mb-4">
-                        <span>Total</span>
+                        <span>Total final</span>
                         <span id="totalAmount">0.00 Bs</span>
                     </div>
 
@@ -219,10 +239,61 @@
         }
 
         function updateTotal() {
-            const total = Object.values(items).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotal = Object.values(items).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const discountPercentage = Math.min(Math.max(parseFloat(document.getElementById('discount_percentage').value || '0'), 0), 100);
+            const discountAmount = Math.max(subtotal * discountPercentage / 100, 0);
+            const total = Math.max(subtotal - discountAmount, 0);
+
+            document.getElementById('subtotalAmount').textContent = subtotal.toFixed(2) + ' Bs';
+            document.getElementById('discountPercentageView').textContent = discountPercentage.toFixed(0) + '%';
+            document.getElementById('discountAmountView').textContent = discountAmount.toFixed(2) + ' Bs';
             document.getElementById('totalAmount').textContent = total.toFixed(2) + ' Bs';
-            document.getElementById('subtotalAmount').textContent = total.toFixed(2) + ' Bs';
         }
+
+        // Descuento
+        function setDiscount(value) {
+            const input = document.getElementById('discount_percentage');
+            const parsed = Math.min(Math.max(parseFloat(value || '0'), 0), 100);
+            input.value = parsed;
+            updateTotal();
+        }
+
+        const discountField = document.getElementById('discount_percentage');
+        discountField.addEventListener('input', function() {
+            setDiscount(this.value);
+        });
+
+        // Aviso de cumpleaños próximo
+        function updateBirthdayAlert() {
+            const select = document.getElementById('customer_id');
+            const option = select.options[select.selectedIndex];
+            const birthdayValue = option ? option.dataset.birthday : '';
+            const alertBox = document.getElementById('birthdayAlert');
+
+            if (!birthdayValue) {
+                alertBox.classList.add('hidden');
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const birthday = new Date(birthdayValue + 'T00:00:00');
+            let nextBirthday = new Date(today.getFullYear(), birthday.getMonth(), birthday.getDate());
+            if (nextBirthday < today) {
+                nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+            }
+
+            const diffDays = Math.round((nextBirthday - today) / (1000 * 60 * 60 * 24));
+            const shouldShow = diffDays >= 0 && diffDays <= 7;
+            alertBox.classList.toggle('hidden', !shouldShow);
+        }
+
+        document.getElementById('customer_id').addEventListener('change', function() {
+            updateBirthdayAlert();
+        });
+
+        setDiscount(0);
+        updateBirthdayAlert();
     </script>
 
 </x-app-layout>
