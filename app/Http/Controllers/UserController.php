@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -84,7 +85,12 @@ class UserController extends Controller
                 ->with('error', 'No puedes eliminar tu propio usuario.');
         }
 
-        $user->delete();
+        try {
+            $user->delete();
+        } catch (QueryException $e) {
+            return redirect()->route('users.index')
+                ->with('error', 'No se puede eliminar este usuario porque posee operaciones registradas en el sistema.');
+        }
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario eliminado correctamente.');

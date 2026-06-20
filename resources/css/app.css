@@ -1,3 +1,190 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Estilos elegantes para MALBA */
+
+/* Base */
+@layer base {
+    body {
+        @apply text-malba-gray-dark bg-malba-gray-light;
+    }
+
+    .dark body {
+        background-color: #1f232b;
+        color: #f3f4f6;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply text-malba-gray-dark;
+    }
+
+    .dark h1,
+    .dark h2,
+    .dark h3,
+    .dark h4,
+    .dark h5,
+    .dark h6 {
+        color: #f3f4f6;
+    }
+
+    /* Enlaces principales */
+    a {
+        @apply text-malba-rose-pale hover:text-malba-rose-dark transition-colors duration-200;
+    }
+}
+
+/* Componentes */
+@layer components {
+
+    /* Tarjetas elegantes */
+    .card {
+        @apply bg-white rounded-lg shadow-elegant border border-malba-gray-lighter;
+    }
+
+    .card-lg {
+        @apply bg-white rounded-lg shadow-elegant-lg border border-malba-gray-lighter;
+    }
+
+    /* Inputs con estilo elegante */
+    .input-elegant {
+        @apply border-malba-gray-lighter rounded-lg focus:border-malba-rose-pale focus:ring-2 focus:ring-malba-rose-pale/20 shadow-elegant transition-all duration-200;
+    }
+
+    /* Botones elegantes */
+    .btn-malba {
+        @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ease-in-out;
+    }
+
+    .btn-primary {
+        @apply btn-malba bg-malba-rose-pale text-white hover:bg-malba-rose-dark active:scale-95 shadow-elegant;
+    }
+
+    .btn-secondary {
+        @apply btn-malba bg-malba-gray-light text-malba-gray-dark hover:bg-malba-gray-lighter border border-malba-gray-lighter;
+    }
+
+    /* Tablas elegantes */
+    .table-elegant {
+        @apply w-full text-left border-collapse;
+    }
+
+    .table-elegant thead {
+        @apply bg-malba-rose-pale;
+    }
+
+    .table-elegant thead th {
+        @apply text-white px-6 py-3 font-semibold text-sm;
+    }
+
+    .table-elegant tbody tr {
+        @apply border-b border-malba-gray-lighter hover:bg-malba-gray-light transition-colors duration-150;
+    }
+
+    .table-elegant tbody td {
+        @apply px-6 py-3 text-malba-gray-dark;
+    }
+
+    /* Header elegante */
+    .header-elegant {
+        @apply bg-white shadow-elegant border-b border-malba-gray-lighter;
+    }
+
+    /* Badges */
+    .badge-success {
+        @apply bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold;
+    }
+
+    .badge-danger {
+        @apply bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold;
+    }
+
+    .dark .bg-white {
+        background-color: #242a31 !important;
+    }
+
+    .dark .bg-malba-gray-light,
+    .dark .bg-malba-gray-lighter,
+    .dark .bg-gray-50,
+    .dark .bg-gray-100 {
+        background-color: #2b313a !important;
+    }
+
+    .dark .text-malba-gray-dark,
+    .dark .text-gray-800,
+    .dark .text-gray-900 {
+        color: #f3f4f6 !important;
+    }
+
+    .dark .text-malba-gray-medium,
+    .dark .text-gray-400,
+    .dark .text-gray-500,
+    .dark .text-gray-600,
+    .dark .text-gray-700 {
+        color: #9ca3af !important;
+    }
+
+    .dark .border-malba-gray-lighter,
+    .dark .border-gray-200,
+    .dark .border-gray-300 {
+        border-color: #353b44 !important;
+    }
+
+    .dark .shadow-elegant,
+    .dark .shadow-elegant-lg {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .dark .bg-green-50,
+    .dark .bg-green-100 {
+        background-color: rgba(16, 185, 129, 0.14) !important;
+    }
+
+    .dark .text-green-700,
+    .dark .text-green-800 {
+        color: #86efac !important;
+    }
+
+    .dark .bg-red-50,
+    .dark .bg-red-100 {
+        background-color: rgba(239, 68, 68, 0.14) !important;
+    }
+
+    .dark .text-red-700,
+    .dark .text-red-800 {
+        color: #fca5a5 !important;
+    }
+
+    .dark .bg-blue-50,
+    .dark .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.14) !important;
+    }
+
+    .dark .text-blue-700,
+    .dark .text-blue-800 {
+        color: #93c5fd !important;
+    }
+
+    .dark .bg-purple-100 {
+        background-color: rgba(168, 85, 247, 0.14) !important;
+    }
+
+    .dark .text-purple-700 {
+        color: #d8b4fe !important;
+    }
+
+    .dark .bg-amber-50,
+    .dark .bg-amber-100 {
+        background-color: rgba(245, 158, 11, 0.14) !important;
+    }
+
+    .dark .text-amber-700,
+    .dark .text-amber-800 {
+        color: #fcd34d !important;
+    }
+}

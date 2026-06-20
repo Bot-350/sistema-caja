@@ -1,51 +1,51 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="text-2xl font-bold leading-tight tracking-tight text-malba-gray-dark md:text-3xl">
             Editar Producto
         </h2>
     </x-slot>
 
     <div class="py-6 max-w-2xl mx-auto px-4">
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="rounded-2xl border border-malba-gray-lighter bg-white p-6 shadow-elegant-lg">
             <form action="{{ route('products.update', $product) }}" method="POST">
                 @csrf
                 @method('PUT')
 
                 {{-- Nombre --}}
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-1">Nombre</label>
+                    <label class="mb-1 block font-medium text-malba-gray-dark">Nombre</label>
                     <input type="text" name="name" value="{{ old('name', $product->name) }}"
-                        class="border rounded px-3 py-2 w-full" required />
+                        class="w-full rounded-xl border border-malba-gray-lighter bg-malba-gray-light px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 placeholder:text-malba-gray-medium focus:border-malba-rose-pale focus:bg-white focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" required />
                     @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm font-medium text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Marca --}}
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-1">Marca</label>
+                    <label class="mb-1 block font-medium text-malba-gray-dark">Marca</label>
                     <input type="text" name="brand" value="{{ old('brand', $product->brand) }}"
-                        class="border rounded px-3 py-2 w-full" />
+                        class="w-full rounded-xl border border-malba-gray-lighter bg-malba-gray-light px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 placeholder:text-malba-gray-medium focus:border-malba-rose-pale focus:bg-white focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" />
                     @error('brand')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm font-medium text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Precio --}}
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-1">Precio</label>
+                    <label class="mb-1 block font-medium text-malba-gray-dark">Precio</label>
                     <input type="number" name="price" value="{{ old('price', $product->price) }}"
-                        class="border rounded px-3 py-2 w-full" step="0.01" min="0" required />
+                        class="w-full rounded-xl border border-malba-gray-lighter bg-malba-gray-light px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 placeholder:text-malba-gray-medium focus:border-malba-rose-pale focus:bg-white focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" step="0.01" min="0" required />
                     @error('price')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm font-medium text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Categoría --}}
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-medium mb-1">Categoría</label>
-                    <select name="category_id" class="border rounded px-3 py-2 w-full" required>
+                    <label class="mb-1 block font-medium text-malba-gray-dark">Categoría</label>
+                    <select name="category_id" class="w-full rounded-xl border border-malba-gray-lighter bg-malba-gray-light px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 focus:border-malba-rose-pale focus:bg-white focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" required>
                         <option value="">Seleccionar categoría</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}"
@@ -55,18 +55,18 @@
                         @endforeach
                     </select>
                     @error('category_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm font-medium text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Botones --}}
                 <div class="flex gap-2 justify-end">
                     <a href="{{ route('products.index') }}"
-                        class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
+                        class="inline-flex items-center rounded-full border border-malba-gray-lighter bg-white px-4 py-2 text-sm font-semibold text-malba-gray-dark shadow-elegant transition-all duration-200 hover:border-malba-rose-pale hover:text-malba-rose-dark hover:shadow-elegant-lg">
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        class="inline-flex items-center rounded-full bg-malba-rose-pale px-4 py-2 text-sm font-semibold text-white shadow-elegant transition-all duration-200 hover:bg-malba-rose-dark hover:shadow-elegant-lg">
                         Actualizar
                     </button>
                 </div>

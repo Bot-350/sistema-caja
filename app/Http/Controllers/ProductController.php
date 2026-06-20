@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -58,7 +59,12 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $product->delete();
+        try {
+            $product->delete();
+        } catch (QueryException $e) {
+            return redirect()->route('products.index')
+                ->with('error', 'No se puede eliminar este producto porque está asociado a ventas registradas.');
+        }
 
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado correctamente.');

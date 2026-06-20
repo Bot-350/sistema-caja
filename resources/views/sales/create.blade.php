@@ -3,19 +3,19 @@
     <div class="flex h-screen overflow-hidden" style="height: calc(100vh - 64px)">
 
         {{-- Columna izquierda --}}
-        <div class="flex-1 flex flex-col overflow-hidden bg-gray-50 p-4">
+        <div class="flex-1 flex flex-col overflow-hidden bg-malba-gray-light p-4">
 
             {{-- Buscador y cliente --}}
             <div class="flex gap-3 mb-4">
                 <div class="flex-1 relative">
                     <input type="text" id="searchProduct"
                         placeholder="Buscar producto..."
-                        class="border rounded-lg px-4 py-2 w-full pl-10 bg-white" />
-                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full rounded-xl border border-malba-gray-lighter bg-white px-4 py-2 pl-10 text-malba-gray-dark shadow-elegant transition-colors duration-200 placeholder:text-malba-gray-medium focus:border-malba-rose-pale focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" />
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-malba-gray-medium" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
                     </svg>
                 </div>
-                <select name="customer_id" id="customer_id" class="border rounded-lg px-3 py-2 bg-white w-48">
+                <select name="customer_id" id="customer_id" class="w-48 rounded-xl border border-malba-gray-lighter bg-white px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 focus:border-malba-rose-pale focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20">
                     <option value="">Sin cliente</option>
                     @foreach($customers as $customer)
                         <option value="{{ $customer->id }}" data-birthday="{{ $customer->birthday ? $customer->birthday->format('Y-m-d') : '' }}">{{ $customer->name }}</option>
@@ -23,21 +23,21 @@
                 </select>
             </div>
 
-            <div id="birthdayAlert" class="hidden mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <div id="birthdayAlert" class="hidden mb-4 rounded-xl border border-malba-gray-lighter bg-white px-4 py-3 text-sm text-malba-gray-dark shadow-elegant">
                 🎂 Cliente con cumpleaños próximo. Considere aplicar una promoción.
             </div>
 
             {{-- Categorías --}}
             <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
                 <button type="button" onclick="filterCategory('all')"
-                    class="category-btn active-cat px-4 py-2 rounded-lg border bg-white text-sm whitespace-nowrap font-medium">
+                    class="category-btn active-cat px-4 py-2 rounded-full border border-malba-rose-pale bg-malba-rose-pale text-sm whitespace-nowrap font-semibold text-white shadow-elegant transition-all duration-200 hover:bg-malba-rose-dark">
                     Todos
                 </button>
                 @foreach($products->groupBy('category.name') as $catName => $catProducts)
                 <button type="button" onclick="filterCategory('{{ strtolower($catName) }}')"
-                    class="category-btn px-4 py-2 rounded-lg border bg-white text-sm whitespace-nowrap text-gray-600">
+                    class="category-btn px-4 py-2 rounded-full border border-malba-gray-lighter bg-white text-sm whitespace-nowrap text-malba-gray-dark shadow-elegant transition-all duration-200 hover:border-malba-rose-pale hover:text-malba-rose-dark">
                     {{ $catName }}
-                    <span class="text-gray-400 text-xs ml-1">{{ $catProducts->count() }}</span>
+                    <span class="text-malba-gray-medium text-xs ml-1">{{ $catProducts->count() }}</span>
                 </button>
                 @endforeach
             </div>
@@ -45,18 +45,18 @@
             {{-- Grid de productos --}}
             <div id="productGrid" class="grid grid-cols-3 gap-3 overflow-y-auto flex-1">
                 @foreach($products as $product)
-                <div class="product-card bg-white border rounded-xl p-4 cursor-pointer hover:border-blue-400 hover:shadow-sm transition"
+                <div class="product-card rounded-2xl border border-malba-gray-lighter bg-white p-4 cursor-pointer shadow-elegant transition-all duration-200 hover:border-malba-rose-pale hover:shadow-elegant-lg"
                     data-name="{{ strtolower($product->name) }}"
                     data-category="{{ strtolower($product->category->name) }}"
                     onclick="addProduct({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})">
-                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-malba-gray-light">
+                        <svg class="h-5 w-5 text-malba-gray-medium" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
                         </svg>
                     </div>
-                    <p class="font-medium text-sm text-gray-800">{{ $product->name }}</p>
-                    <p class="text-xs text-gray-400 mt-1">{{ $product->category->name }}</p>
-                    <p class="text-blue-600 font-semibold text-sm mt-2">{{ number_format($product->price, 2) }} Bs</p>
+                    <p class="text-sm font-semibold text-malba-gray-dark">{{ $product->name }}</p>
+                    <p class="mt-1 text-xs text-malba-gray-medium">{{ $product->category->name }}</p>
+                    <p class="mt-2 text-sm font-semibold text-malba-rose-dark">{{ number_format($product->price, 2) }} Bs</p>
                 </div>
                 @endforeach
             </div>
@@ -64,64 +64,64 @@
         </div>
 
         {{-- Columna derecha - Ticket --}}
-        <div class="w-80 bg-white border-l flex flex-col">
+        <div class="w-80 bg-white border-l border-malba-gray-lighter flex flex-col">
 
             <form action="{{ route('sales.store') }}" method="POST" id="saleForm" class="flex flex-col h-full">
                 @csrf
                 <input type="hidden" name="customer_id" id="customer_id_input">
 
                 {{-- Header ticket --}}
-                <div class="p-4 border-b">
-                    <h3 class="font-semibold text-gray-800">Ticket</h3>
-                    <p id="customerName" class="text-xs text-gray-400 mt-1">Sin cliente</p>
+                <div class="border-b border-malba-gray-lighter p-4">
+                    <h3 class="font-semibold text-malba-gray-dark">Ticket</h3>
+                    <p id="customerName" class="mt-1 text-xs text-malba-gray-medium">Sin cliente</p>
                 </div>
 
                 {{-- Items del ticket --}}
                 <div id="ticketItems" class="flex-1 overflow-y-auto p-4 space-y-3">
-                    <p id="emptyTicket" class="text-gray-400 text-center text-sm py-8">
+                    <p id="emptyTicket" class="py-8 text-center text-sm text-malba-gray-medium">
                         Agrega productos al ticket
                     </p>
                 </div>
 
                 {{-- Totales --}}
-                <div class="border-t p-4">
-                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                <div class="border-t border-malba-gray-lighter p-4">
+                    <div class="mb-1 flex justify-between text-sm text-malba-gray-medium">
                         <span>Subtotal</span>
                         <span id="subtotalAmount">0.00 Bs</span>
                     </div>
                     <div class="mb-3">
-                        <label for="discount_percentage" class="block text-xs text-gray-500 mb-1 font-medium">Descuento (%)</label>
+                        <label for="discount_percentage" class="mb-1 block text-xs font-medium text-malba-gray-medium">Descuento (%)</label>
                         <div class="flex items-center gap-2">
                             <input type="number" name="discount_percentage" id="discount_percentage"
                                 value="0" min="0" max="100" step="1"
-                                class="border rounded-lg px-3 py-2 w-full bg-white" />
+                                class="w-full rounded-xl border border-malba-gray-lighter bg-white px-3 py-2 text-malba-gray-dark shadow-elegant transition-colors duration-200 focus:border-malba-rose-pale focus:outline-none focus:ring-2 focus:ring-malba-rose-pale/20" />
                         </div>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                    <div class="mb-1 flex justify-between text-sm text-malba-gray-medium">
                         <span>Descuento aplicado</span>
                         <span id="discountPercentageView">0%</span>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                    <div class="mb-1 flex justify-between text-sm text-malba-gray-medium">
                         <span>Monto descontado</span>
                         <span id="discountAmountView">0.00 Bs</span>
                     </div>
-                    <div class="flex justify-between font-semibold text-lg text-gray-800 mb-4">
+                    <div class="mb-4 flex justify-between text-lg font-semibold text-malba-gray-dark">
                         <span>Total final</span>
                         <span id="totalAmount">0.00 Bs</span>
                     </div>
 
                     {{-- Método de pago --}}
-                    <p class="text-xs text-gray-500 mb-2 font-medium">Método de pago</p>
+                    <p class="mb-2 text-xs font-medium text-malba-gray-medium">Método de pago</p>
                     <div class="flex gap-2 mb-4">
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="payment_method" value="efectivo" class="sr-only peer" checked>
-                            <div class="border-2 rounded-lg p-2 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-600 text-gray-500 transition">
+                            <div class="rounded-xl border-2 border-malba-gray-lighter p-2 text-center text-sm text-malba-gray-medium transition peer-checked:border-malba-rose-pale peer-checked:bg-malba-rose-pale/10 peer-checked:text-malba-rose-dark">
                                 💵 Efectivo
                             </div>
                         </label>
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="payment_method" value="qr" class="sr-only peer">
-                            <div class="border-2 rounded-lg p-2 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-600 text-gray-500 transition">
+                            <div class="rounded-xl border-2 border-malba-gray-lighter p-2 text-center text-sm text-malba-gray-medium transition peer-checked:border-malba-rose-pale peer-checked:bg-malba-rose-pale/10 peer-checked:text-malba-rose-dark">
                                 📱 QR
                             </div>
                         </label>
@@ -129,11 +129,11 @@
 
                     {{-- Botones --}}
                     <button type="submit"
-                        class="bg-blue-600 text-white py-3 rounded-xl w-full font-semibold hover:bg-blue-700 transition mb-2">
+                        class="mb-2 inline-flex w-full items-center justify-center rounded-full bg-malba-rose-pale py-3 font-semibold text-white shadow-elegant transition-all duration-200 hover:bg-malba-rose-dark hover:shadow-elegant-lg">
                         Registrar Venta
                     </button>
                     <a href="{{ route('sales.index') }}"
-                        class="block text-center text-gray-500 text-sm py-2 hover:text-gray-700">
+                        class="block py-2 text-center text-sm text-malba-gray-medium transition-colors duration-200 hover:text-malba-rose-dark">
                         Cancelar
                     </a>
                 </div>
@@ -144,7 +144,7 @@
     </div>
 
     <style>
-        .active-cat { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+        .active-cat { border-color: #d4989f; color: #ffffff; background: #d4989f; }
     </style>
 
     <script>
@@ -191,7 +191,7 @@
 
             if (Object.keys(items).length === 0) {
                 const msg = document.createElement('p');
-                msg.className = 'text-gray-400 text-center text-sm py-8';
+                msg.className = 'text-malba-gray-medium text-center text-sm py-8';
                 msg.textContent = 'Agrega productos al ticket';
                 container.appendChild(msg);
                 document.getElementById('totalAmount').textContent = '0.00 Bs';
@@ -201,24 +201,24 @@
 
             Object.entries(items).forEach(([id, item], index) => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center gap-2 py-2 border-b';
+                div.className = 'flex items-center gap-2 py-2 border-b border-malba-gray-lighter';
                 div.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-800 truncate">${item.name}</p>
-                        <p class="text-xs text-gray-400">${item.price.toFixed(2)} Bs c/u</p>
+                        <p class="text-sm font-medium text-malba-gray-dark truncate">${item.name}</p>
+                        <p class="text-xs text-malba-gray-medium">${item.price.toFixed(2)} Bs c/u</p>
                         <input type="hidden" name="items[${index}][product_id]" value="${id}">
                         <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
                     </div>
                     <div class="flex items-center gap-1">
                         <button type="button" onclick="changeQty(${id}, -1)"
-                            class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">−</button>
-                        <span class="w-6 text-center text-sm font-medium">${item.quantity}</span>
+                            class="flex h-6 w-6 items-center justify-center rounded-full bg-malba-gray-light text-sm font-bold text-malba-gray-dark transition-colors hover:bg-malba-gray-lighter">−</button>
+                        <span class="w-6 text-center text-sm font-medium text-malba-gray-dark">${item.quantity}</span>
                         <button type="button" onclick="changeQty(${id}, 1)"
-                            class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">+</button>
+                            class="flex h-6 w-6 items-center justify-center rounded-full bg-malba-gray-light text-sm font-bold text-malba-gray-dark transition-colors hover:bg-malba-gray-lighter">+</button>
                     </div>
                     <div class="text-right min-w-14">
-                        <p class="text-sm font-semibold text-gray-800">${(item.price * item.quantity).toFixed(2)} Bs</p>
-                        <button type="button" onclick="removeItem(${id})" class="text-red-400 hover:text-red-600 text-xs">eliminar</button>
+                        <p class="text-sm font-semibold text-malba-gray-dark">${(item.price * item.quantity).toFixed(2)} Bs</p>
+                        <button type="button" onclick="removeItem(${id})" class="text-xs text-red-500 transition-colors hover:text-red-600">eliminar</button>
                     </div>
                 `;
                 container.appendChild(div);

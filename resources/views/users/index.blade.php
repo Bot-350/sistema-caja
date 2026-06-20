@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-malba-gray-dark leading-tight">
             Usuarios
         </h2>
     </x-slot>
@@ -23,29 +23,29 @@
         {{-- Botón agregar --}}
         <div class="flex justify-end mb-4">
             <a href="{{ route('users.create') }}"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                class="bg-malba-rose-pale text-white px-4 py-2 rounded-lg hover:bg-malba-rose-dark shadow-elegant">
                 + Nuevo Usuario
             </a>
         </div>
 
         {{-- Lista de usuarios --}}
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow-elegant border border-malba-gray-lighter">
             <table class="w-full text-left">
-                <thead class="bg-gray-50 border-b">
+                <thead class="bg-malba-rose-pale">
                     <tr>
-                        <th class="px-6 py-3 text-gray-600">#</th>
-                        <th class="px-6 py-3 text-gray-600">Nombre</th>
-                        <th class="px-6 py-3 text-gray-600">Correo</th>
-                        <th class="px-6 py-3 text-gray-600">Rol</th>
-                        <th class="px-6 py-3 text-gray-600">Acciones</th>
+                        <th class="px-6 py-3 text-white font-semibold">#</th>
+                        <th class="px-6 py-3 text-white font-semibold">Nombre</th>
+                        <th class="px-6 py-3 text-white font-semibold">Correo</th>
+                        <th class="px-6 py-3 text-white font-semibold">Rol</th>
+                        <th class="px-6 py-3 text-white font-semibold">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($users as $user)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-3">{{ $user->id }}</td>
-                        <td class="px-6 py-3">{{ $user->name }}</td>
-                        <td class="px-6 py-3">{{ $user->email }}</td>
+                    <tr class="border-b border-malba-gray-lighter hover:bg-malba-gray-light transition-colors duration-150">
+                        <td class="px-6 py-3 text-malba-gray-dark">{{ $user->id }}</td>
+                        <td class="px-6 py-3 text-malba-gray-dark">{{ $user->name }}</td>
+                        <td class="px-6 py-3 text-malba-gray-dark">{{ $user->email }}</td>
                         <td class="px-6 py-3">
                             @if($user->role === 'admin')
                                 <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">
@@ -59,7 +59,7 @@
                         </td>
                         <td class="px-6 py-3 flex gap-2">
                             <a href="{{ route('users.edit', $user) }}"
-                                class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 text-sm">
+                                class="bg-malba-rose-pale text-white px-3 py-1 rounded-lg hover:bg-malba-rose-dark text-sm shadow-elegant transition-colors">
                                 Editar
                             </a>
                             @if($user->id !== auth()->id())
@@ -77,7 +77,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-400">
+                        <td colspan="5" class="px-6 py-4 text-center text-malba-gray-medium">
                             No hay usuarios registrados.
                         </td>
                     </tr>

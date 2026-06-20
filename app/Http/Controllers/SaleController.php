@@ -106,6 +106,11 @@ class SaleController extends Controller
     // Muestra el ticket de la venta
     public function ticket(Sale $sale)
     {
+        if ($sale->status === 'anulada') {
+            return redirect()->route('sales.show', $sale)
+                ->with('error', 'No se puede imprimir una venta anulada.');
+        }
+
         $sale->load('items', 'customer');
 
         return view('sales.ticket', compact('sale'));
