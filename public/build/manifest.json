@@ -1,0 +1,34 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-WPUzrVe4.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BU6mFzGd.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "services": [
+    {
+      "type": "web",
+      "name": "sistema-caja",
+      "runtime": "node",
+      "buildCommand": "npm install && npm run build",
+      "startCommand": "echo \"Build complete\""
+    },
+    {
+      "type": "web",
+      "name": "sistema-caja-php",
+      "runtime": "php",
+      "runtimeVersion": "8.3",
+      "buildCommand": "composer install && cp -r ../sistema-caja/public/build ./public/",
+      "startCommand": "php -S 0.0.0.0:$PORT -t public"
+    }
+  ]
+}
