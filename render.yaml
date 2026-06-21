@@ -1,9 +1,15 @@
 services:
   - type: web
     name: sistema-caja
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: echo "Build complete"
+    
+  - type: web
+    name: sistema-caja-php
     runtime: php
     runtimeVersion: 8.3
-    buildCommand: composer install && npm install && npm run build && php artisan migrate --force
+    buildCommand: composer install && cp -r ../sistema-caja/public/build ./public/
     startCommand: php -S 0.0.0.0:$PORT -t public
     envVars:
       - key: APP_ENV
