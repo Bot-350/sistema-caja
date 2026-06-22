@@ -3,8 +3,8 @@ services:
     name: sistema-caja
     runtime: php
     runtimeVersion: 8.3
-    buildCommand: npm install && npm run build && composer install && php artisan migrate:fresh --seed --force
-    startCommand: php -S 0.0.0.0:$PORT -t public public/index.php
+    buildCommand: npm install && npm run build && composer install
+    startCommand: sh -c "mkdir -p database && touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:$PORT -t public public/index.php"
     envVars:
       - key: APP_ENV
         value: production
