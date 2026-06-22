@@ -45,7 +45,7 @@ new #[Layout('layouts.guest')] class extends Component
     <!-- Session Status -->
     <x-auth-session-status class="mb-4 rounded-xl border border-malba-gray-lighter bg-white px-4 py-3 text-sm text-malba-gray-dark shadow-elegant dark:border-[#353b44] dark:bg-[#2b313a] dark:text-gray-100" :status="session('status')" />
 
-    <form wire:submit="login">
+    <form wire:submit.prevent="login">
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" class="text-malba-gray-dark dark:text-gray-100" />
