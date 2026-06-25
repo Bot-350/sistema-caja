@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -23,16 +23,19 @@ RUN docker-php-ext-install \
     bcmath \
     gd
 
+RUN a2enmod rewrite
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+WORKDIR /var/www/html
 
 COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache && \
-    chmod -R 775 storage bootstrap/cache
+    chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
 
 RUN npm install && npm run build
 
@@ -40,6 +43,8 @@ RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
 RUN php artisan key:generate --force
 
-EXPOSE 8000
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Starting server on port ${PORT:-8000}' && php -S 0.0.0.0:${PORT:-8000} -t public public/index.php"
+EXPOSE 80
+
+CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
