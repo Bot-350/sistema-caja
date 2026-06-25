@@ -6,8 +6,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libmysqlclient-dev \
-    default-mysql-client \
+    libmariadb-dev \
     zip \
     unzip \
     git \
