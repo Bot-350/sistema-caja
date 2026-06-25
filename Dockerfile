@@ -44,8 +44,8 @@ RUN npm install && npm run build
 
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-RUN php artisan key:generate --force
+RUN chmod +x docker/start.sh
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["sh", "docker/start.sh"]

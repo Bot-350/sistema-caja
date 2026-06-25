@@ -1,10 +1,7 @@
 services:
   - type: web
     name: sistema-caja
-    runtime: php
-    runtimeVersion: 8.3
-    buildCommand: npm install && npm run build && composer install
-    startCommand: sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:$PORT -t public public/index.php"
+    dockerfilePath: Dockerfile
     envVars:
       - key: APP_ENV
         value: production
@@ -13,7 +10,7 @@ services:
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
-        value: database/database.sqlite
+        value: storage/database.sqlite
       - key: LOG_CHANNEL
         value: stderr
       - key: SESSION_DRIVER

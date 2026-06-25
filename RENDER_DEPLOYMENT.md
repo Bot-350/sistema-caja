@@ -38,7 +38,10 @@ En el panel de Render, establece estas variables de entorno:
 | `APP_DEBUG` | `false` |
 | `APP_KEY` | (Se genera automáticamente) |
 | `DB_CONNECTION` | `sqlite` |
+| `DB_DATABASE` | `storage/database.sqlite` |
 | `LOG_CHANNEL` | `stderr` |
+
+> En Render, la ruta dentro del repositorio puede no ser escribible. Usa `storage/database.sqlite` y crea el archivo en el arranque para que SQLite pueda escribir el archivo.
 
 **Nota**: Si necesitas una base de datos MySQL/PostgreSQL, puedes crear un servicio de base de datos en Render y actualizar las credenciales en el archivo `render.yaml`.
 
