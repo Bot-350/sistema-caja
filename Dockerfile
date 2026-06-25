@@ -49,3 +49,6 @@ RUN php artisan key:generate --force
 EXPOSE 80
 
 CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
+
+RUN chmod 777 /var/www/html/database
+RUN chmod 666 /var/www/html/database/database.sqlite
