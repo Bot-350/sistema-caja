@@ -47,4 +47,4 @@ RUN php artisan key:generate --force
 
 EXPOSE 80
 
-CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Listen '$PORT > /etc/apache2/ports.conf && apache2-foreground"
+CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Listen '$PORT > /etc/apache2/ports.conf && apache2-foreground 2>&1"
