@@ -1,1 +1,1 @@
-*.sqlite*
+# Removed to allow database.sqlite in production
