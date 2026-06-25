@@ -6,19 +6,20 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libmysqlclient-dev \
+    default-mysql-client \
     zip \
     unzip \
     git \
-    sqlite3 \
-    libsqlite3-dev \
     nodejs \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones PHP necesarias
+# Instalar extensiones PHP necesarias incluyendo pdo_mysql
 RUN docker-php-ext-install \
     pdo \
-    pdo_sqlite \
+    pdo_mysql \
+    mysqli \
     mbstring \
     exif \
     pcntl \
@@ -54,4 +55,4 @@ RUN php artisan key:generate --force
 EXPOSE 8000
 
 # Script de inicio
-CMD ["sh", "-c", "php artisan migrate --force && php -S 0.0.0.0:${PORT:-8000} -t public"]
+CMD ["sh", "-c", "php artisan migrate --seed --force && php -S 0.0.0.0:${PORT:-8000} -t public"]
