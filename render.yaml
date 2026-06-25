@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: sistema-caja
+    runtime: php
+    runtimeVersion: 8.3
+    buildCommand: npm install && npm run build && composer install
+    startCommand: sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:$PORT -t public public/index.php"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: database/database.sqlite
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: sistema-caja
+          property: url
