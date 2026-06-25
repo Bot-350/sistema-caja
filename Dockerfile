@@ -47,4 +47,4 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 
 EXPOSE 80
 
-CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
+CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Listen '$PORT > /etc/apache2/ports.conf && sed -i s/80/$PORT/g /etc/apache2/sites-available/000-default.conf && apache2-foreground"
