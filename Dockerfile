@@ -48,4 +48,4 @@ RUN php artisan key:generate --force
 
 EXPOSE 80
 
-CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
+CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Starting server' && php -S 0.0.0.0:8000 -t public public/index.php"
