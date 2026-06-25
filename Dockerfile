@@ -48,4 +48,4 @@ RUN php artisan key:generate --force
 
 EXPOSE 80
 
-CMD sh -c "chmod 777 /var/www/html/database && php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
+CMD ["apache2-foreground"]
