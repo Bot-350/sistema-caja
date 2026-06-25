@@ -24,6 +24,7 @@ RUN docker-php-ext-install \
     gd
 
 RUN a2enmod rewrite
+RUN a2dismod mpm_event && a2enmod mpm_prefork
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
