@@ -42,4 +42,4 @@ RUN php artisan key:generate --force
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Starting server on port '${PORT:-8000} && php -S 0.0.0.0:${PORT:-8000} -t public public/index.php"]
+CMD sh -c "php artisan config:clear && php artisan migrate --force && php artisan db:seed --force && echo 'Starting server on port ${PORT:-8000}' && php -S 0.0.0.0:${PORT:-8000} -t public public/index.php"
