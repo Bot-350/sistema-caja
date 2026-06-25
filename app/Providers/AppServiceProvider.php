@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- 1. ASEGÚRATE DE INCLUIR ESTA LÍNEA
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,8 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('production')) {
-            \URL::forceScheme('https');
+        // 2. FUERZA HTTPS SI EL ENTORNO ES PRODUCCIÓN
+        if ($this->app->environment('production') || env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
         }
     }
 }
